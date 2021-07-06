@@ -1,0 +1,28 @@
+{
+    "room_all":[],
+    "position_all":[],
+    "object_all":[],
+    "attachment_all":[],
+    "cmds_all":[],
+    "hide_cmds_all":[],
+    
+    "lock":[],
+
+    "room_at":"",
+    "at":"",
+    
+    "room_order":[],
+
+    "room_plot":[
+        [
+            "escape!"
+        ]
+    ],
+    
+    "room":[],
+    "position":[],
+    "object":[],
+    "attachment":[],
+
+    "level":""
+}
