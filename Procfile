@@ -1,2 +1,2 @@
 worker : python bot.py
-heroku ps:scale web=1
+web : gunicorn gettingstarted.wsgi --log-file -
