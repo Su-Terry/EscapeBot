@@ -75,7 +75,6 @@ class Escape(Cog_Extension):
                     jdata['attachments'].append(attachment)
         with open(f'User/users/{user}.json', 'w', encoding='utf8') as jfile:
             json.dump(jdata, jfile, indent=4)
-            # print('筆記本' in jdata['objects'])
 
     def getRoomPlot(self, user:str):
         with open(f'User/users/{user}.json', 'r', encoding='utf8') as jfile:
@@ -84,6 +83,7 @@ class Escape(Cog_Extension):
             jdata['rooms'].append(room)
         with open(f'User/users/{user}.json', 'w', encoding='utf8') as jfile:
             json.dump(jdata, jfile, indent=4)
+        plots:list
         plots = jdata['room_plot'][int(jdata['room_plot_idx'])]
         self.addItem(plots, user)
         return plots
@@ -91,10 +91,9 @@ class Escape(Cog_Extension):
     def getCmdPlot(self, _plot:str, user:str):
         with open(f'User/users/{user}.json', 'r', encoding='utf8') as jfile:
             jdata = json.load(jfile)
-        try:
-            return jdata[_plot]
-        except:
-            return []
+        plots:list
+        plots = jdata[_plot] if _plot in jdata else []
+        return plots
 
     def getRoomEmbed(self, user:str):
         with open(f'User/users/{user}.json', 'r', encoding='utf8') as jfile:
@@ -189,7 +188,6 @@ class Escape(Cog_Extension):
 
     @commands.group(brief='call escape game')
     async def escape(self, msg) -> None:
-        await msg.channel.send('現在正在進行版本更新')
         await msg.channel.send('輸入"%help escape"查看詳細指令')
         await msg.channel.send('輸入"%escape H"查看規則')
 
@@ -198,7 +196,6 @@ class Escape(Cog_Extension):
         user = msg.author.name
         self.newGame(user)
         await msg.channel.send(embed=self.getTxtEmbed('NEW', user))
-        plots:list
         plots = self.getRoomPlot(user)
         for plot in plots:
             await msg.channel.send(plot)
@@ -212,7 +209,6 @@ class Escape(Cog_Extension):
             return
         self.loadGame(user)
         await msg.channel.send(embed=self.getTxtEmbed('LOAD', user))
-        plots:list
         plots = self.getRoomPlot(user)
         for plot in plots:
             await msg.channel.send(plot)
@@ -241,7 +237,7 @@ class Escape(Cog_Extension):
             return
         with open(f'User/users/{user}.json', 'r', encoding='utf8') as jfile:
             jdata = json.load(jfile)
-        await msg.channel.send(jdata['hint'][jdata['room_plot_idx']])
+        await msg.channel.send(jdata['hint'][int(jdata['room_plot_idx'])])
 
         await msg.channel.send('請注意: 這一關的密室逃脫提示還沒寫完整，敬請期待')
 
@@ -324,7 +320,6 @@ class Escape(Cog_Extension):
             await msg.channel.send('你並沒有在遊戲中')
             return
         jdata['inInputPasswd'] = ''
-        pre_check = jdata['inCheck']
         
         attachment_name = f'{jdata["inCheck"]}_{name}'
         if attachment_name in jdata['attachments']:
