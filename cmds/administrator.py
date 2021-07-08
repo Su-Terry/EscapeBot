@@ -10,7 +10,7 @@ class Administrator(Cog_Extension):
     def __init__(self, bot):
         super().__init__(bot)
     
-    @has_permissions(administator=True)
+    @has_permissions(manage_messages=True)
     @commands.command(brief='刪除{num}則訊息，"%clear {num}"')
     async def clear(self, ctx, num:int):
         await ctx.message.delete()
