@@ -1,24 +1,20 @@
 # encoding: utf-8
+from json.decoder import JSONDecodeError
 import discord
 from core.classes import Cog_Extension
 from discord.ext import commands
-import json
-import os
+import os, json
 
 class Escape(Cog_Extension):
-
-    users:list
 
     def __init__(self, bot):
         super().__init__(bot)
 
     def newGame(self, user:str):
-
         with open(f'User/userlist.json', 'r', encoding='utf8') as jfile:
             jdata = json.load(jfile)
             if user not in jdata['users']:
                 jdata['users'].append(user)
-            self.users = jdata['users']
         with open(f'User/userlist.json', 'w', encoding='utf8') as jfile:
             json.dump(jdata, jfile, indent=4)
 
@@ -34,10 +30,6 @@ class Escape(Cog_Extension):
             json.dump(jdata, jfile, indent=4)
 
     def loadGame(self, user:str):
-        with open(f'User/userlist.json', 'r', encoding='utf8') as jfile:
-            jdata = json.load(jfile)
-            self.users = jdata['users']
-
         with open(f'User/users/{user}.json', 'r', encoding='utf8') as jfile:
             jdata = json.load(jfile)
             jdata['inGame'] = "TRUE"
@@ -45,6 +37,7 @@ class Escape(Cog_Extension):
             json.dump(jdata, jfile, indent=4)
 
     def nextRoom(self, user:str):
+        """Simply add `room_plot_idx` by one"""
         with open(f'User/users/{user}.json', 'r', encoding='utf8') as jfile:
             jdata = json.load(jfile)
             jdata['room_plot_idx'] = str(int(jdata['room_plot_idx']) + 1)
@@ -52,6 +45,10 @@ class Escape(Cog_Extension):
             json.dump(jdata, jfile, indent=4)
 
     def addItem(self, plots:list, user:str):
+        """From `plots` to add items such as `rooms`, `positions`, 
+        `objects`, and `attachments`.
+        Besides that, we add `cmds` in the meanwhile.
+        """
         with open(f'User/users/{user}.json', 'r', encoding='utf8') as jfile:
             jdata = json.load(jfile)
         for plot in plots:
@@ -70,6 +67,9 @@ class Escape(Cog_Extension):
                 owner_name, name = map(str, attachment.split('_'))
                 if owner_name == jdata['inCheck'] and name in plot and attachment not in jdata['attachments']:
                     jdata['attachments'].append(attachment)
+            for cmd in jdata['cmd_all']:
+                if cmd in plot and cmd not in jdata['cmds']:
+                    jdata['cmds'].append(cmd)
         with open(f'User/users/{user}.json', 'w', encoding='utf8') as jfile:
             json.dump(jdata, jfile, indent=4)
 
@@ -136,18 +136,18 @@ class Escape(Cog_Extension):
 
     @commands.Cog.listener()
     async def on_message(self, msg) -> None:
+        if msg.author == self.bot.user: return
+
         user = msg.author.name
         if not os.path.isfile(f'User/users/{user}.json'): return
 
         with open('User/userlist.json', 'r', encoding='utf8') as jfile:
             jdata = json.load(jfile)
-            self.users = jdata['users']
-            if user not in self.users: return
+            if user not in jdata['users']: return
 
         with open(f'User/users/{user}.json', 'r', encoding='utf8') as jfile:
             jdata = json.load(jfile)
         if jdata['inGame'] == "FALSE": return
-        if msg.author == self.bot.user: return
 
         txt = msg.content.lower()
         if txt == 'q' or txt == 'quit':
@@ -185,7 +185,6 @@ class Escape(Cog_Extension):
 
     @commands.group(brief='call escape game')
     async def escape(self, msg) -> None:
-        await msg.channel.send('輸入"%help escape"查看詳細指令')
         await msg.channel.send('輸入"%escape H"查看規則')
 
     @escape.command(brief='新遊戲, "%escape N"')
@@ -201,7 +200,8 @@ class Escape(Cog_Extension):
     @escape.command(brief='載入遊戲, "%escape L"')
     async def L(self, msg) -> None:
         user = msg.author.name
-        if user not in self.users:
+        
+        if not os.path.isfile(f'User/users{user}.json'):
             await msg.channel.send('沒有找到你的遊戲紀錄')
             return
         self.loadGame(user)
@@ -216,10 +216,15 @@ class Escape(Cog_Extension):
         await msg.channel.send('輸入"%escape N" 開啟新遊戲')
         await msg.channel.send('輸入"%escape L" 載入舊遊戲')
         await msg.channel.send('輸入"%HINT" 查看遊戲提示')
-        await msg.channel.send('輸入"%mv [object] [place]" 把[object]移動到[place]')
-        await msg.channel.send('輸入"%goto [place]" 移動到[place]')
-        await msg.channel.send('輸入"%check [object/room/position]/(attachment)" 獲得劇情中在[]/()內名字的劇情')
-        await msg.channel.send('注意: 以上都不用輸入括號')
+        user = msg.author.name
+        with open(f'User/users/{user}.json', 'r', encoding='utf8') as jfile:
+            jdata = json.load(jfile)
+        for cmd in jdata['cmds']:
+            await msg.channel.send(jdata[cmd])
+        if len(jdata['cmds']) == 0:
+            await msg.channel.send('目前沒有命令可供使用')
+        else:
+            await msg.channel.send('注意: 以上都不用輸入括號')
 
     @commands.command(brief='查看遊戲提示, "%HINT"')
     async def HINT(self, msg) -> None:
