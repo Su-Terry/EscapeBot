@@ -14,9 +14,11 @@ async def inGame(ctx):
             return False
     return True
 
-class Cmds(Escape):
+class Cmds(Cog_Extension):
     def __init__(self, bot):
         super().__init__(bot)
+        global escape
+        escape = Escape(bot)
 
     @commands.check(inGame)
     @commands.command(brief='查看遊戲提示, "%HINT"')
@@ -52,7 +54,7 @@ class Cmds(Escape):
             if object in jdata[i]:
                 jdata[i].remove(object)
                 await msg.channel.send(f'已將[{object}]從[{i}]移動到[{place}]')
-        plots = self.getCmdPlot(f'mv {object} {place}_plot', user)
+        plots = escape.getCmdPlot(f'mv {object} {place}_plot', user)
         for plot in plots:
             await msg.channel.send(plot)
         with open(f'User/users/{user}.json', 'w', encoding='utf8') as jfile:
@@ -70,16 +72,16 @@ class Cmds(Escape):
         if place in jdata['positions']:
             jdata['at'] = place
             await msg.channel.send(f'已移動至[{place}]!')
-            plots = self.getCmdPlot(f'goto {place}_plot', user)
+            plots = escape.getCmdPlot(f'goto {place}_plot', user)
             for plot in plots:
                 await msg.channel.send(plot)
         elif place in jdata['rooms']:
             jdata['at'] = jdata['room_at'] = place
             await msg.channel.send(f'已移動至[{place}]!')
-            plots = self.getCmdPlot(f'{place}_plot', user)
+            plots = escape.getCmdPlot(f'{place}_plot', user)
             for plot in plots:
                 await msg.channel.send(plot)
-            await msg.channel.send(embed=self.getRoomEmbed(user))
+            await msg.channel.send(embed=escape.getRoomEmbed(user))
         else:
             await msg.channel.send('移動失敗，這可能不是一個能移動到的地方或目前還未出現')
         with open(f'User/users/{user}.json', 'w', encoding='utf8') as jfile:
@@ -118,7 +120,7 @@ class Cmds(Escape):
         with open(f'User/users/{user}.json', 'w', encoding='utf8') as jfile:
             jdata = json.dump(jdata, jfile, indent=4)
 
-        self.addItem(plots, user)
+        escape.addItem(plots, user)
         for plot in plots:
             await msg.channel.send(plot)
 
