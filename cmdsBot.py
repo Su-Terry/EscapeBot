@@ -12,7 +12,6 @@ async def on_command_error(ctx, error):
     if isinstance(error, commands.MissingRequiredArgument):
         await ctx.send('請輸入正確格式')
 
-@bot.is_owner()
 @bot.commands()
 async def reload(ctx, extension):
     bot.reload_extension(f"cmds.{extension}")
