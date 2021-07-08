@@ -216,11 +216,10 @@ class Escape(Cog_Extension):
             await msg.channel.send(plot)
         await msg.channel.send(embed=self.getRoomEmbed(user))
 
-    @escape.command(brief='規則, "%escape H"')
+    @escape.command(brief='查詢指令規則, "%escape H"')
     async def H(self, msg) -> None:
         await msg.channel.send('輸入"%escape N" 開啟新遊戲')
         await msg.channel.send('輸入"%escape L" 載入舊遊戲')
-        await msg.channel.send('輸入"%HINT" 查看遊戲提示')
         user = msg.author.name
         with open(f'User/users/{user}.json', 'r', encoding='utf8') as jfile:
             jdata = json.load(jfile)
@@ -233,10 +232,11 @@ class Escape(Cog_Extension):
 
     @commands.check(inGame)
     @commands.command(brief='查看遊戲提示, "%HINT"')
-    async def HINT(self, msg) -> None:
+    async def 提示(self, msg) -> None:
         user = msg.author.name
         with open(f'User/users/{user}.json', 'r', encoding='utf8') as jfile:
             jdata = json.load(jfile)
+        if '提示' not in jdata['cmds']: return
         await msg.channel.send(jdata['hint'][int(jdata['room_plot_idx'])])
         await msg.channel.send('請注意: 這一關的密室逃脫提示還沒寫完整，敬請期待')
 
@@ -246,6 +246,7 @@ class Escape(Cog_Extension):
         user = msg.author.name
         with open(f'User/users/{user}.json', 'r', encoding='utf8') as jfile:
             jdata = json.load(jfile)
+        if 'mv' not in jdata['cmds']: return
         if object not in jdata['objects']:
             await msg.channel.send('移動失敗，這可能不是物品或目前還未出現')
             return
@@ -275,6 +276,7 @@ class Escape(Cog_Extension):
         user = msg.author.name
         with open(f'User/users/{user}.json', 'r', encoding='utf8') as jfile:
             jdata = json.load(jfile)
+        if 'goto' not in jdata['cmds']: return
         if place == jdata['at']:
             await msg.channel.send('移動失敗，你已經在這裡了，You are sleeping')
         if place in jdata['positions']:
@@ -296,11 +298,12 @@ class Escape(Cog_Extension):
             jdata = json.dump(jdata, jfile, indent=4)
 
     @commands.check(inGame)
-    @commands.command(brief='獲得劇情中在[]/()內名字的劇情, "%check [object/room/position]/(attachment)"')
-    async def check(self, msg, name:str) -> None:
+    @commands.command(brief='獲得劇情中在[]/()內名字的劇情, "%檢查 [房間/位置/物件]/(附件)"')
+    async def 檢查(self, msg, name:str) -> None:
         user = msg.author.name
         with open(f'User/users/{user}.json', 'r', encoding='utf8') as jfile:
             jdata = json.load(jfile)
+        if '檢查' not in jdata['cmds']: return
         jdata['inInputPasswd'] = ''
         
         attachment_name = f'{jdata["inCheck"]}_{name}'
