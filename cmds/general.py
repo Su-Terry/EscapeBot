@@ -8,13 +8,13 @@ class General(Cog_Extension):
         super().__init__(bot)
 
     @commands.command(brief='use the given link to add this bot to your DC server')
-    async def invite_link(ctx):
+    async def invite_link(self, ctx):
         with open("setting.json", 'r', encoding="utf8") as jfile:
             jdata = json.load(jfile)
         await ctx.send(jdata['invite_link'])
 
     @commands.command(brief='show impotant version_log')
-    async def version_log(ctx):
+    async def version_log(self, ctx):
         with open("setting.json", 'r', encoding="utf8") as jfile:
             jdata = json.load(jfile)
         with open("version.log", 'r', encoding="utf8") as file:
