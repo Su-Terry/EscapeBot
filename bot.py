@@ -8,6 +8,11 @@ bot = commands.Bot(command_prefix='%')
 async def on_ready():
     print(">> EscapeBot is online <<")
 
+@bot.event
+async def on_command_error(ctx, error):
+    if isinstance(error, commands.MissingRequiredArgument):
+        await ctx.send('請輸入正確格式')
+
 @bot.command()
 async def reload(ctx, extension):
     bot.reload_extension(f"cmds.{extension}")

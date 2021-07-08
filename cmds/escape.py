@@ -4,6 +4,12 @@ from core.classes import Cog_Extension
 from discord.ext import commands
 import os, json
 
+async def inGame(msg):
+    user = msg.author.name
+    with open(f'User/users/{user}.json', 'r', encoding='utf8') as jfile:
+        jdata = json.load(jfile)
+        return False if jdata['inGame'] == "FALSE" else True
+
 class Escape(Cog_Extension):
 
     def __init__(self, bot):
@@ -225,35 +231,21 @@ class Escape(Cog_Extension):
         else:
             await msg.channel.send('注意: 以上都不用輸入括號')
 
+    @commands.check(inGame)
     @commands.command(brief='查看遊戲提示, "%HINT"')
     async def HINT(self, msg) -> None:
         user = msg.author.name
-        if not os.path.isfile(f'User/users/{user}.json'):
-            await msg.channel.send('沒有找到你的遊戲紀錄，請開啟新遊戲')
-            return
-        with open(f'User/users/{user}.json', 'r', encoding='utf8') as jfile:
-            jdata = json.load(jfile)
-        if jdata['inGame'] == "FALSE":
-            await msg.channel.send('你並沒有在遊戲中')
-            return
         with open(f'User/users/{user}.json', 'r', encoding='utf8') as jfile:
             jdata = json.load(jfile)
         await msg.channel.send(jdata['hint'][int(jdata['room_plot_idx'])])
-
         await msg.channel.send('請注意: 這一關的密室逃脫提示還沒寫完整，敬請期待')
 
+    @commands.check(inGame)
     @commands.command(brief='把[object]移動到[place], "%mv [object] [place]"')
     async def mv(self, msg, object:str, place:str) -> None:
         user = msg.author.name
-        if not os.path.isfile(f'User/users/{user}.json'):
-            await msg.channel.send('沒有找到你的遊戲紀錄，請開啟新遊戲')
-            return
         with open(f'User/users/{user}.json', 'r', encoding='utf8') as jfile:
             jdata = json.load(jfile)
-        jdata['inCheck'] = jdata['inInputPasswd'] = ''
-        if jdata['inGame'] == "FALSE":
-            await msg.channel.send('你並沒有在遊戲中')
-            return
         if object not in jdata['objects']:
             await msg.channel.send('移動失敗，這可能不是物品或目前還未出現')
             return
@@ -277,18 +269,12 @@ class Escape(Cog_Extension):
         with open(f'User/users/{user}.json', 'w', encoding='utf8') as jfile:
             jdata = json.dump(jdata, jfile, indent=4)
 
+    @commands.check(inGame)
     @commands.command(brief='移動到[place], "%goto {place}"')
     async def goto(self, msg, place:str) -> None:
         user = msg.author.name
-        if not os.path.isfile(f'User/users/{user}.json'):
-            await msg.channel.send('沒有找到你的遊戲紀錄，請開啟新遊戲')
-            return
         with open(f'User/users/{user}.json', 'r', encoding='utf8') as jfile:
             jdata = json.load(jfile)
-        jdata['inCheck'] = jdata['inInputPasswd'] = ''
-        if jdata['inGame'] == "FALSE":
-            await msg.channel.send('你並沒有在遊戲中')
-            return
         if place == jdata['at']:
             await msg.channel.send('移動失敗，你已經在這裡了，You are sleeping')
         if place in jdata['positions']:
@@ -309,17 +295,12 @@ class Escape(Cog_Extension):
         with open(f'User/users/{user}.json', 'w', encoding='utf8') as jfile:
             jdata = json.dump(jdata, jfile, indent=4)
 
+    @commands.check(inGame)
     @commands.command(brief='獲得劇情中在[]/()內名字的劇情, "%check [object/room/position]/(attachment)"')
     async def check(self, msg, name:str) -> None:
         user = msg.author.name
-        if not os.path.isfile(f'User/users/{user}.json'):
-            await msg.channel.send('沒有找到你的遊戲紀錄，請開啟新遊戲')
-            return
         with open(f'User/users/{user}.json', 'r', encoding='utf8') as jfile:
             jdata = json.load(jfile)
-        if jdata['inGame'] == "FALSE":
-            await msg.channel.send('你並沒有在遊戲中')
-            return
         jdata['inInputPasswd'] = ''
         
         attachment_name = f'{jdata["inCheck"]}_{name}'
