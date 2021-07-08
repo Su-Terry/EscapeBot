@@ -1,5 +1,4 @@
 # encoding: utf-8
-from json.decoder import JSONDecodeError
 import discord
 from core.classes import Cog_Extension
 from discord.ext import commands
