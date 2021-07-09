@@ -24,21 +24,18 @@ async def help(ctx):
     with open('setting.json', 'r', encoding='utf8') as jfile:
         jdata = json.load(jfile)
     embed = discord.Embed(title='Help for EscapeBot',
-            description="逃脫遊戲: 版本{}".format(jdata['version']),
-            color=0xedf10e)
-    embed.set_author(name="Made by: oceansfavor", 
-        url="https://www.instagram.com/oceansfavor/", 
-        icon_url="https://i.imgur.com/tax7zpT.jpg")
-    embed.add_field(name='Administrator', value='clear {num} -> 清理訊息')
-    embed.add_field(name='General', 
-        value='invite_link -> 獲得這隻機器人的連結\nversion_log -> 查看版本紀錄')
+            description="逃脫遊戲: 版本{}".format(jdata['version']))
+    
     embed.add_field(name='Escape', value='escape -> 進入遊戲')
+    embed.add_field(name='General', value='邀請連結\n版本紀錄')
+    embed.add_field(name='Administrator', value='clear {num} -> 清理訊息')
+    
     if os.path.isfile(path):
         with open(path, 'r', encoding='utf8') as jfile:
             jdata = json.load(jfile)
         cmds = ''
         for cmd in jdata['cmds']:
-            cmds += f'{cmd}  '
+            cmds += f'{cmd}\n'
         if cmds != '':
             embed.add_field(name='遊戲中指令', value=cmds)
     await ctx.send(embed=embed)
