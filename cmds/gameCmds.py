@@ -46,7 +46,7 @@ class Cmds(Cog_Extension):
 
     @commands.check(inGame)
     @commands.check(hintInCmds)
-    @commands.command(brief='查看遊戲提示, "%HINT"')
+    @commands.command(brief='查看遊戲提示, "HINT"')
     async def 提示(self, msg) -> None:
         user = msg.author.name
         with open(f'User/users/{user}.json', 'r', encoding='utf8') as jfile:
@@ -56,7 +56,7 @@ class Cmds(Cog_Extension):
 
     @commands.check(inGame)
     @commands.check(mvInCmds)
-    @commands.command(brief='把[object]移動到[place], "%mv [object] [place]"')
+    @commands.command(brief='把[object]移動到[place], "mv [object] [place]"')
     async def mv(self, msg, object:str, place:str) -> None:
         user = msg.author.name
         with open(f'User/users/{user}.json', 'r', encoding='utf8') as jfile:
@@ -87,7 +87,7 @@ class Cmds(Cog_Extension):
 
     @commands.check(inGame)
     @commands.check(gotoInCmds)
-    @commands.command(brief='移動到[place], "%goto {place}"')
+    @commands.command(brief='移動到[place], "goto {place}"')
     async def goto(self, msg, place:str) -> None:
         user = msg.author.name
         with open(f'User/users/{user}.json', 'r', encoding='utf8') as jfile:
@@ -115,7 +115,7 @@ class Cmds(Cog_Extension):
 
     @commands.check(inGame)
     @commands.check(checkInCmds)
-    @commands.command(brief='獲得劇情中在[]/()內名字的劇情, "%檢查 [房間/位置/物件]/(附件)"')
+    @commands.command(brief='獲得劇情中在[]/()內名字的劇情, "檢查 [房間/位置/物件]/(附件)"')
     async def 檢查(self, msg, name:str) -> None:
         user = msg.author.name
         with open(f'User/users/{user}.json', 'r', encoding='utf8') as jfile:
