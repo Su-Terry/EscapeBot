@@ -2,7 +2,7 @@ from discord.ext import commands
 import os
 
 
-bot = commands.Bot(command_prefix='')
+bot = commands.Bot(command_prefix='', help_command=commands.MinimalHelpCommand)
 
 @bot.event
 async def on_ready():
