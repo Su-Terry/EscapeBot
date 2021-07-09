@@ -28,9 +28,9 @@ async def help(ctx):
     embed = discord.Embed(title='Help for EscapeBot',
             description="逃脫遊戲: 版本{}".format(jdata['version']))
     
-    embed.add_field(name='Escape', value='escape -> 進入遊戲')
-    embed.add_field(name='General', value='邀請連結\n版本紀錄')
-    embed.add_field(name='Administrator', value='clear {num} -> 清理訊息')
+    embed.add_field(name='Escape', value='escape -> 進入遊戲', inline=False)
+    embed.add_field(name='General', value='邀請連結\n版本紀錄', inline=False)
+    embed.add_field(name='Administrator', value='clear {num} -> 清理訊息', inline=False)
     
     if os.path.isfile(path):
         with open(path, 'r', encoding='utf8') as jfile:
@@ -40,7 +40,7 @@ async def help(ctx):
             for cmd in jdata['cmds']:
                 cmds += f'{cmd}\n'
             if cmds != '':
-                embed.add_field(name='遊戲中指令', value=cmds)
+                embed.add_field(name='遊戲中指令', value=cmds, inline=False)
     await ctx.send(embed=embed)
 
 @bot.command()
