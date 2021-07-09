@@ -41,6 +41,7 @@ async def help(ctx):
             cmds += f'{cmd}  '
         if cmds != '':
             embed.add_field(name='遊戲中指令', value=cmds)
+    await ctx.send(embed=embed)
 
 @bot.command()
 async def reload(ctx, extension):
