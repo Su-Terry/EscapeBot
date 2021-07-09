@@ -2,7 +2,7 @@ from discord.ext import commands
 import os
 
 
-bot = commands.Bot(command_prefix='%')
+bot = commands.Bot(command_prefix='')
 
 @bot.event
 async def on_ready():
@@ -10,8 +10,11 @@ async def on_ready():
 
 @bot.event
 async def on_command_error(ctx, error):
-    if isinstance(error, commands.MissingRequiredArgument):
+    if isinstance(error, commands.MissingRequiredArgument) or \
+        isinstance(error, commands.TooManyArguments):
         await ctx.send('請輸入正確格式')
+    if isinstance(error, commands.CommandNotFound):
+        pass
 
 @bot.command()
 async def reload(ctx, extension):
@@ -19,7 +22,7 @@ async def reload(ctx, extension):
     await ctx.send(f"Re - Loaded {extension} done.")
 
 for Filename in os.listdir(r'./cmds'):
-    if Filename.endswith('.py') and not Filename.startswith('game'):
+    if Filename.endswith('.py'):
         bot.load_extension(f"cmds.{Filename[:-3]}")
 
 if __name__ == '__main__':

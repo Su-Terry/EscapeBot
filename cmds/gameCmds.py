@@ -14,6 +14,30 @@ async def inGame(ctx):
             return False
     return True
 
+async def hintInCmds(ctx):
+    user = ctx.author.name
+    with open(f'User/users/{user}.json', 'r', encoding='utf8') as jfile:
+        jdata = json.load(jfile)
+    return '提示' in jdata['cmds']
+
+async def mvInCmds(ctx):
+    user = ctx.author.name
+    with open(f'User/users/{user}.json', 'r', encoding='utf8') as jfile:
+        jdata = json.load(jfile)
+    return 'mv' in jdata['cmds']
+
+async def gotoInCmds(ctx):
+    user = ctx.author.name
+    with open(f'User/users/{user}.json', 'r', encoding='utf8') as jfile:
+        jdata = json.load(jfile)
+    return 'goto' in jdata['cmds']
+
+async def checkInCmds(ctx):
+    user = ctx.author.name
+    with open(f'User/users/{user}.json', 'r', encoding='utf8') as jfile:
+        jdata = json.load(jfile)
+    return '檢查' in jdata['cmds']
+
 class Cmds(Cog_Extension):
     def __init__(self, bot):
         super().__init__(bot)
@@ -21,16 +45,17 @@ class Cmds(Cog_Extension):
         escape = Escape(bot)
 
     @commands.check(inGame)
+    @commands.check(hintInCmds)
     @commands.command(brief='查看遊戲提示, "%HINT"')
     async def 提示(self, msg) -> None:
         user = msg.author.name
         with open(f'User/users/{user}.json', 'r', encoding='utf8') as jfile:
             jdata = json.load(jfile)
-        if '提示' not in jdata['cmds']: return
         await msg.channel.send(jdata['hint'][int(jdata['room_plot_idx'])])
         await msg.channel.send('請注意: 這一關的密室逃脫提示還沒寫完整，敬請期待')
 
     @commands.check(inGame)
+    @commands.check(mvInCmds)
     @commands.command(brief='把[object]移動到[place], "%mv [object] [place]"')
     async def mv(self, msg, object:str, place:str) -> None:
         user = msg.author.name
@@ -61,6 +86,7 @@ class Cmds(Cog_Extension):
             jdata = json.dump(jdata, jfile, indent=4)
 
     @commands.check(inGame)
+    @commands.check(gotoInCmds)
     @commands.command(brief='移動到[place], "%goto {place}"')
     async def goto(self, msg, place:str) -> None:
         user = msg.author.name
@@ -88,6 +114,7 @@ class Cmds(Cog_Extension):
             jdata = json.dump(jdata, jfile, indent=4)
 
     @commands.check(inGame)
+    @commands.check(checkInCmds)
     @commands.command(brief='獲得劇情中在[]/()內名字的劇情, "%檢查 [房間/位置/物件]/(附件)"')
     async def 檢查(self, msg, name:str) -> None:
         user = msg.author.name
