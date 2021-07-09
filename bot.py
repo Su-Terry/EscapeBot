@@ -3,7 +3,9 @@ from discord.ext import commands
 import os, json, discord
 
 
-bot = commands.Bot(command_prefix='', help_command=None)
+bot = commands.Bot(command_prefix='')
+
+bot.remove_command('help')
 
 @bot.event
 async def on_ready():
@@ -33,11 +35,12 @@ async def help(ctx):
     if os.path.isfile(path):
         with open(path, 'r', encoding='utf8') as jfile:
             jdata = json.load(jfile)
-        cmds = ''
-        for cmd in jdata['cmds']:
-            cmds += f'{cmd}\n'
-        if cmds != '':
-            embed.add_field(name='遊戲中指令', value=cmds)
+        if jdata['inGame'] == 'TRUE':
+            cmds = ''
+            for cmd in jdata['cmds']:
+                cmds += f'{cmd}\n'
+            if cmds != '':
+                embed.add_field(name='遊戲中指令', value=cmds)
     await ctx.send(embed=embed)
 
 @bot.command()
