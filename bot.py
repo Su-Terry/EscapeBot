@@ -1,8 +1,9 @@
+# encoding: utf-8
 from discord.ext import commands
-import os
+import os, json, discord
 
 
-bot = commands.Bot(command_prefix='', help_command=commands.MinimalHelpCommand())
+bot = commands.Bot(command_prefix='', help_command=None)
 
 @bot.event
 async def on_ready():
@@ -15,6 +16,31 @@ async def on_command_error(ctx, error):
         await ctx.send('請輸入正確格式')
     if isinstance(error, commands.CommandNotFound):
         pass
+
+@bot.command()
+async def help(ctx):
+    user = ctx.author.name
+    path = f'User/users/{user}.json'
+    with open('setting.json', 'r', encoding='utf8') as jfile:
+        jdata = json.load(jfile)
+    embed = discord.Embed(title='Help for EscapeBot',
+            description="逃脫遊戲: 版本{}".format(jdata['version']),
+            color=0xedf10e)
+    embed.set_author(name="Made by: oceansfavor", 
+        url="https://www.instagram.com/oceansfavor/", 
+        icon_url="https://i.imgur.com/tax7zpT.jpg")
+    embed.add_field(name='Administrator', value='clear {num} -> 清理訊息')
+    embed.add_field(name='General', 
+        value='invite_link -> 獲得這隻機器人的連結\nversion_log -> 查看版本紀錄')
+    embed.add_field(name='Escape', value='escape -> 進入遊戲')
+    if os.path.isfile(path):
+        with open(path, 'r', encoding='utf8') as jfile:
+            jdata = json.load(jfile)
+        cmds = ''
+        for cmd in jdata['cmds']:
+            cmds += f'{cmd}  '
+        if cmds != '':
+            embed.add_field(name='遊戲中指令', value=cmds)
 
 @bot.command()
 async def reload(ctx, extension):
