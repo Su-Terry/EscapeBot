@@ -25,7 +25,7 @@ class General(Cog_Extension):
             await ctx.send(log)
 
     @commands.command()
-    async def help(ctx):
+    async def help(self, ctx):
         user = ctx.author.name
         path = f'User/users/{user}.json'
         with open('setting.json', 'r', encoding='utf8') as jfile:
