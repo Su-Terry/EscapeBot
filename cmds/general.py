@@ -24,10 +24,6 @@ class General(Cog_Extension):
         for log in txt:
             await ctx.send(log)
 
-    # @commands.command(brief='set bot language')
-    # async def lang(ctx):
-    #     pass
-
 
 def setup(bot):
     bot.add_cog(General(bot))
