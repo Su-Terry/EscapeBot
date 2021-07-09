@@ -156,7 +156,7 @@ class Escape(Cog_Extension):
 
         inInputPasswd = jdata['inInputPasswd']
         if inInputPasswd != '':
-            if txt[0] == '%': return
+            if txt in jdata['cmds']: return
             if txt == 'x':
                 inInputPasswd = jdata['inInputPasswd'] = ''
                 await msg.channel.send('已離開輸入密碼的模式')
@@ -185,9 +185,9 @@ class Escape(Cog_Extension):
 
     @commands.group(brief='call escape game')
     async def escape(self, msg) -> None:
-        await msg.channel.send('輸入"%escape H"查看規則')
+        await msg.channel.send('輸入"escape H"查看規則')
 
-    @escape.command(brief='新遊戲, "%escape N"')
+    @escape.command(brief='新遊戲, "escape N"')
     async def N(self, msg) -> None:
         user = msg.author.name
         self.newGame(user)
@@ -197,7 +197,7 @@ class Escape(Cog_Extension):
             await msg.channel.send(plot)
         await msg.channel.send(embed=self.getRoomEmbed(user))
 
-    @escape.command(brief='載入遊戲, "%escape L"')
+    @escape.command(brief='載入遊戲, "escape L"')
     async def L(self, msg) -> None:
         user = msg.author.name
         
@@ -211,10 +211,10 @@ class Escape(Cog_Extension):
             await msg.channel.send(plot)
         await msg.channel.send(embed=self.getRoomEmbed(user))
 
-    @escape.command(brief='查詢指令規則, "%escape H"')
+    @escape.command(brief='查詢指令規則, "escape H"')
     async def H(self, msg) -> None:
-        await msg.channel.send('輸入"%escape N" 開啟新遊戲')
-        await msg.channel.send('輸入"%escape L" 載入舊遊戲')
+        await msg.channel.send('輸入"escape N" 開啟新遊戲')
+        await msg.channel.send('輸入"escape L" 載入舊遊戲')
         user = msg.author.name
         with open(f'User/users/{user}.json', 'r', encoding='utf8') as jfile:
             jdata = json.load(jfile)
