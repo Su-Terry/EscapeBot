@@ -11,7 +11,7 @@ class Administrator(Cog_Extension):
         super().__init__(bot)
     
     @has_permissions(manage_messages=True)
-    @commands.command(brief='刪除{num}則訊息，"clear {num}"')
+    @commands.command(brief='Clear {num} messages, "clear {num}"')
     async def clear(self, ctx, num:int):
         await ctx.message.delete()
         await ctx.channel.purge(limit=num)

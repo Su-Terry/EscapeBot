@@ -1,7 +1,8 @@
-"v1.0": 提高程式碼與劇情相容性，release level 1
-"v2.0": 加入使用者log功能，可載入舊遊戲，刪除背包功能，解決一些bug與不合理性
-"v3.0": 適合伺服器使用，玩家間彼此遊戲資料不會互相干擾
-    "v3.1": 使用者功能優化(General_Extension)
-    "v3.2": 24小時運作，修復bug
-    "v3.3": 新增訊息清理功能(clear)，擁有管理訊息權限者可清除訊息
-    "v3.4": 遊戲命令在獲得後才會顯示
+"v0.1": Released level 1
+"v0.2": Added record system and fixed some bugs.
+"v0.3": Made the bot suitable for a server, supporting multiple players.
+    "v0.3.1": Optimized. Added General extension
+    "v0.3.2": Deployed 24/7 service and fixed bugs.
+    "v0.3.3": Added the clear command to clean the chat room.
+"v0.4": Updated Discord API to 2.0 and redeployed the service.
+"v0.5": Revised to English version.
