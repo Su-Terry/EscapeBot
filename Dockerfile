@@ -3,9 +3,9 @@ FROM python:3
 RUN mkdir -p /usr/src/bot
 WORKDIR /usr/src/bot
 
-COPY requirements.txt /bot/
+COPY requirements.txt .
 RUN pip install -r requirements.txt
 
-COPY . /bot
+COPY . .
 
 CMD [ "python3", "bot.py" ]
