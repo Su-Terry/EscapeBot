@@ -366,5 +366,5 @@ class Escape(Cog_Extension):
             await msg.channel.send(plot)
 
 
-def setup(bot):
-    bot.add_cog(Escape(bot))
+async def setup(bot):
+    await bot.add_cog(Escape(bot))
