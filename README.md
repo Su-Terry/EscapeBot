@@ -10,3 +10,4 @@ A 24/7 Text-adventure game bot (non-profit) deployed on fly.io.
     - v0.3.2: Deployed 24/7 service and fixed bugs.
     - v0.3.3: Added the clear command to clean the chat room.
 - v0.4: Updated Discord API to 2.0 and redeployed the service.
+- v0.5: Revised to English version.
