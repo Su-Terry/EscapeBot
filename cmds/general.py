@@ -26,6 +26,7 @@ class General(Cog_Extension):
 
     @commands.command()
     async def help(self, ctx):
+        """Customize -- The help command for EscapeBot"""
         user = ctx.author.name
         path = f'User/users/{user}.json'
         with open('setting.json', 'r', encoding='utf8') as jfile:

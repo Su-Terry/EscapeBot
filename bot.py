@@ -30,3 +30,4 @@ for Filename in os.listdir(r'./cmds'):
 
 if __name__ == '__main__':
     bot.run(os.environ['TOKEN'])
+    # bot.run("YOUR_TOKEN_HERE")
