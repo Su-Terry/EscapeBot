@@ -4,8 +4,6 @@ from discord.ext import commands
 import asyncio
 import os
 
-TOKEN = "ODYxMTQ0NzYyMzU4MTY5NjI2.GMxRqO.X36e7xZBnJJs3IEQSSEB63O6N7fPGTZHYlnQlA"
-
 intents = discord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix='', intents=intents)
@@ -30,6 +28,6 @@ async def load_extensions():
 
 async def main():
     await load_extensions()
-    await bot.start(TOKEN)
+    await bot.start(os.environ["TOKEN"])
     
 asyncio.run(main())
