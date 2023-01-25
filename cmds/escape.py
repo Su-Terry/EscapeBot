@@ -1,4 +1,3 @@
-# encoding: utf-8
 import discord
 from core.classes import Cog_Extension
 from discord.ext import commands
@@ -14,11 +13,11 @@ async def inGame(ctx):
             return False
     return True
 
-async def hintInCmds(ctx):
-    user = ctx.author.name
-    with open(f'User/users/{user}.json', 'r', encoding='utf8') as jfile:
-        jdata = json.load(jfile)
-    return '提示' in jdata['cmds']
+# async def hintInCmds(ctx):
+#     user = ctx.author.name
+#     with open(f'User/users/{user}.json', 'r', encoding='utf8') as jfile:
+#         jdata = json.load(jfile)
+#     return 'hint' in jdata['cmds']
 
 async def mvInCmds(ctx):
     user = ctx.author.name
@@ -36,7 +35,7 @@ async def checkInCmds(ctx):
     user = ctx.author.name
     with open(f'User/users/{user}.json', 'r', encoding='utf8') as jfile:
         jdata = json.load(jfile)
-    return '檢查' in jdata['cmds']
+    return 'inspect' in jdata['cmds']
 
 class Escape(Cog_Extension):
 
@@ -129,7 +128,7 @@ class Escape(Cog_Extension):
         with open(f'User/users/{user}.json', 'r', encoding='utf8') as jfile:
             jdata = json.load(jfile)
         embed = discord.Embed(title=jdata['room_at'],
-            description="這個房間裡有: {}".format(', '.join(jdata[f"{jdata['room_at']}_object"])),
+            description="Objs in room: {}".format(', '.join(jdata[f"{jdata['room_at']}_object"])),
             color=0xedf10e)
         embed.set_author(name="Made by: oceansfavor", 
             url="https://www.instagram.com/oceansfavor/", 
@@ -137,8 +136,8 @@ class Escape(Cog_Extension):
         for place in jdata['rooms']:
             if place == jdata['room_at']: continue
             objects = jdata[f'{place}_object']
-            embed.add_field(name=place, value="東西: {}".format(', '.join(objects)), inline=True)
-        embed.set_footer(text=f"{user}正在玩!")
+            embed.add_field(name=place, value="Stuff: {}".format(', '.join(objects)), inline=True)
+        embed.set_footer(text=f"{user} is playing!")
 
         return embed
 
@@ -159,11 +158,11 @@ class Escape(Cog_Extension):
 
     def getText(self, result:str, player=''):
         if result == 'NEW' or result == 'LOAD':
-            return f'歡迎遊玩escape, {player}'
+            return f'Welcome to ESCAPE, {player}'
         elif result == 'ESCAPE':
-            return f"{player}逃脫成功!"
+            return f"{player} escaped successfully!"
         elif result == 'QUIT':
-            return "感謝你的遊玩"
+            return "Thanks for playing!"
         else:
             raise "result not found"
 
@@ -192,7 +191,7 @@ class Escape(Cog_Extension):
             if txt in jdata['cmds']: return
             if txt == 'x':
                 inInputPasswd = jdata['inInputPasswd'] = ''
-                await msg.channel.send('已離開輸入密碼的模式')
+                await msg.channel.send('Quit entering password mode')
             if txt == jdata[f'{inInputPasswd}_passwd']:
                 jdata[f'{inInputPasswd}_status'] = 'open'
                 plots = self.getCmdPlot(f'{inInputPasswd}_open_plot', user)
@@ -211,16 +210,16 @@ class Escape(Cog_Extension):
                         await msg.channel.send(plot)
                 inInputPasswd = jdata['inInputPasswd'] = ''
             else:
-                await msg.channel.send('密碼錯誤')
+                await msg.channel.send('Incorrect password')
 
         with open(f'User/users/{user}.json', 'w', encoding='utf8') as jfile:
             json.dump(jdata, jfile, indent=4)
 
     @commands.group(brief='call escape game')
     async def escape(self, msg) -> None:
-        await msg.channel.send('輸入"escape H"查看規則')
+        await msg.channel.send('Enter "escape H" to check the rules.')
 
-    @escape.command(brief='新遊戲, "escape N"')
+    @escape.command(brief='new game, "escape N"')
     async def N(self, msg) -> None:
         user = msg.author.name
         self.newGame(user)
@@ -230,12 +229,12 @@ class Escape(Cog_Extension):
             await msg.channel.send(plot)
         await msg.channel.send(embed=self.getRoomEmbed(user))
 
-    @escape.command(brief='載入遊戲, "escape L"')
+    @escape.command(brief='load game, "escape L"')
     async def L(self, msg) -> None:
         user = msg.author.name
         
         if not os.path.isfile(f'User/users{user}.json'):
-            await msg.channel.send('沒有找到你的遊戲紀錄')
+            await msg.channel.send('No game record.')
             return
         self.loadGame(user)
         await msg.channel.send(embed=self.getTxtEmbed('LOAD', user))
@@ -244,55 +243,55 @@ class Escape(Cog_Extension):
             await msg.channel.send(plot)
         await msg.channel.send(embed=self.getRoomEmbed(user))
 
-    @escape.command(brief='查詢指令規則, "escape H"')
+    @escape.command(brief='Game rules, "escape H"')
     async def H(self, msg) -> None:
-        await msg.channel.send('輸入"escape N" 開啟新遊戲')
-        await msg.channel.send('輸入"escape L" 載入舊遊戲')
+        await msg.channel.send('Enter "escape N" to start new game.')
+        await msg.channel.send('Enter "escape L" to load game.')
         user = msg.author.name
         with open(f'User/users/{user}.json', 'r', encoding='utf8') as jfile:
             jdata = json.load(jfile)
         for cmd in jdata['cmds']:
             await msg.channel.send(jdata[cmd])
         if len(jdata['cmds']) == 0:
-            await msg.channel.send('目前沒有命令可供使用')
+            await msg.channel.send('Currently no game cmd.')
         else:
-            await msg.channel.send('注意: 以上都不用輸入括號')
+            await msg.channel.send('Usage: "{verb} {noun}"')
 
-    @commands.check(inGame)
-    @commands.check(hintInCmds)
-    @commands.command(brief='查看遊戲提示, "HINT"')
-    async def 提示(self, msg) -> None:
-        user = msg.author.name
-        with open(f'User/users/{user}.json', 'r', encoding='utf8') as jfile:
-            jdata = json.load(jfile)
-        await msg.channel.send(jdata['hint'][int(jdata['room_plot_idx'])])
-        await msg.channel.send('請注意: 這一關的密室逃脫提示還沒寫完整，敬請期待')
+    # @commands.check(inGame)
+    # @commands.check(hintInCmds)
+    # @commands.command(brief='See the hint, "HINT"')
+    # async def hint(self, msg) -> None:
+    #     user = msg.author.name
+    #     with open(f'User/users/{user}.json', 'r', encoding='utf8') as jfile:
+    #         jdata = json.load(jfile)
+    #     await msg.channel.send(jdata['hint'][int(jdata['room_plot_idx'])])
+    #     await msg.channel.send("There's no hint in this level.")
 
     @commands.check(inGame)
     @commands.check(mvInCmds)
-    @commands.command(brief='把[object]移動到[place], "mv [object] [place]"')
+    @commands.command(brief='Move [object] to [place], "mv [object] [place]"')
     async def mv(self, msg, object:str, place:str) -> None:
         user = msg.author.name
         with open(f'User/users/{user}.json', 'r', encoding='utf8') as jfile:
             jdata = json.load(jfile)
         if 'mv' not in jdata['cmds']: return
         if object not in jdata['objects']:
-            await msg.channel.send('移動失敗，這可能不是物品或目前還未出現')
+            await msg.channel.send('Object: Not existing or unable to move.')
             return
         if place not in jdata['positions'] + jdata['rooms']:
-            await msg.channel.send('移動失敗，目的地不是一個能合法移動到的地方')
+            await msg.channel.send('Place: Not a legal position for moving to.')
             return
         if object not in jdata[f'{jdata["room_at"]}_object']:
-            await msg.channel.send('移動失敗，這個物品不在你的房間裡, 你只能移動你房間的物品')
+            await msg.channel.send('Object: The Object is not in the current room.')
             return
         if object in jdata[f'{jdata[place]}_object']:
-            await msg.channel.send(f'移動失敗，[{object}]已經在[{place}]了')
+            await msg.channel.send(f'Moving: The [{object}] has already in [{place}].')
             return
         jdata[f'{place}_object'].append(object)
         for i in jdata['positions']+jdata['rooms']:
             if object in jdata[i]:
                 jdata[i].remove(object)
-                await msg.channel.send(f'已將[{object}]從[{i}]移動到[{place}]')
+                await msg.channel.send(f'Moved [{object}] from [{i}] to [{place}].')
         plots = self.getCmdPlot(f'mv {object} {place}_plot', user)
         for plot in plots:
             await msg.channel.send(plot)
@@ -301,40 +300,40 @@ class Escape(Cog_Extension):
 
     @commands.check(inGame)
     @commands.check(gotoInCmds)
-    @commands.command(brief='移動到[place], "goto {place}"')
+    @commands.command(brief='Go to [place], "goto {place}"')
     async def goto(self, msg, place:str) -> None:
         user = msg.author.name
         with open(f'User/users/{user}.json', 'r', encoding='utf8') as jfile:
             jdata = json.load(jfile)
         if 'goto' not in jdata['cmds']: return
         if place == jdata['at']:
-            await msg.channel.send('移動失敗，你已經在這裡了，You are sleeping')
+            await msg.channel.send('Failed: You are already here.')
         if place in jdata['positions']:
             jdata['at'] = place
-            await msg.channel.send(f'已移動至[{place}]!')
+            await msg.channel.send(f'Went to [{place}].')
             plots = self.getCmdPlot(f'goto {place}_plot', user)
             for plot in plots:
                 await msg.channel.send(plot)
         elif place in jdata['rooms']:
             jdata['at'] = jdata['room_at'] = place
-            await msg.channel.send(f'已移動至[{place}]!')
+            await msg.channel.send(f'Went to [{place}].')
             plots = self.getCmdPlot(f'{place}_plot', user)
             for plot in plots:
                 await msg.channel.send(plot)
             await msg.channel.send(embed=self.getRoomEmbed(user))
         else:
-            await msg.channel.send('移動失敗，這可能不是一個能移動到的地方或目前還未出現')
+            await msg.channel.send('Place: Not existing or unable for goin to.')
         with open(f'User/users/{user}.json', 'w', encoding='utf8') as jfile:
             jdata = json.dump(jdata, jfile, indent=4)
 
     @commands.check(inGame)
     @commands.check(checkInCmds)
-    @commands.command(brief='獲得劇情中在[]/()內名字的劇情, "檢查 [房間/位置/物件]/(附件)"')
-    async def 檢查(self, msg, name:str) -> None:
+    @commands.command(brief='See the plot of bracketed text, "inspect [room/place/obj]/(attachment)"')
+    async def inspect(self, msg, name:str) -> None:
         user = msg.author.name
         with open(f'User/users/{user}.json', 'r', encoding='utf8') as jfile:
             jdata = json.load(jfile)
-        if '檢查' not in jdata['cmds']: return
+        if 'inspect' not in jdata['cmds']: return
         jdata['inInputPasswd'] = ''
         
         attachment_name = f'{jdata["inCheck"]}_{name}'
@@ -345,7 +344,7 @@ class Escape(Cog_Extension):
                 plots = jdata[f'{attachment_name}_{lock_status}_plot']
                 if lock_status == 'lock':
                     jdata['inInputPasswd'] = attachment_name
-                    await msg.channel.send("輸入x或命令取消輸入模式")
+                    await msg.channel.send("Enter x to exit the typing mode.")
             else:
                 plots = jdata[f'{attachment_name}_plot']
         elif name in jdata['rooms']+jdata['positions']+jdata['objects']:
@@ -355,7 +354,7 @@ class Escape(Cog_Extension):
             jdata['inCheck'] = name
             plots = jdata[f'{name}_plot']
         else:
-            await msg.channel.send('目前你在的地方沒有這個地方/東西')
+            await msg.channel.send('The thing is not exist at your position.')
             return
 
         with open(f'User/users/{user}.json', 'w', encoding='utf8') as jfile:
