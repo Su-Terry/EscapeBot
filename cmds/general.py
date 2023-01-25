@@ -9,13 +9,13 @@ class General(Cog_Extension):
         super().__init__(bot)
 
     @commands.command(brief='add this bot to your DC server')
-    async def 邀請連結(self, ctx):
+    async def invite_link(self, ctx):
         with open("setting.json", 'r', encoding="utf8") as jfile:
             jdata = json.load(jfile)
         await ctx.send(jdata['invite_link'])
 
     @commands.command()
-    async def 版本紀錄(self, ctx):
+    async def version_record(self, ctx):
         with open("setting.json", 'r', encoding="utf8") as jfile:
             jdata = json.load(jfile)
         with open("version.log", 'r', encoding="utf8") as file:
@@ -50,5 +50,5 @@ class General(Cog_Extension):
         await ctx.send(embed=embed)
 
 
-def setup(bot):
-    bot.add_cog(General(bot))
+async def setup(bot):
+    await bot.add_cog(General(bot))

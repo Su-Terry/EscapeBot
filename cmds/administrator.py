@@ -17,5 +17,5 @@ class Administrator(Cog_Extension):
         await ctx.channel.purge(limit=num)
 
 
-def setup(bot):
-    bot.add_cog(Administrator(bot))
+async def setup(bot):
+    await bot.add_cog(Administrator(bot))
