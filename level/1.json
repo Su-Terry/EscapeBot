@@ -34,7 +34,7 @@
     "recliner_plot": ["The chair is so comfortable."],
     "office-desk_plot": ["I like the classic long black oak desk. There's a [notebook] placed on it."],
     "door_lock_lock_plot": ["Please enter the password."],
-    "door_lock_open_plot": ["The door lock made a 'beep' sound.", "Leaving the studio."],
+    "door_lock_open_plot": ["The door lock made a 'beep' sound.", "Leaving the studio.", "escape!"],
     "notebook_plot": ["Nothing on it except a small number, 79."],
 
     "door_lock_passwd": "4579",
