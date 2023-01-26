@@ -3,6 +3,9 @@
 A 24/7 Text-adventure game bot (non-profit) deployed on fly.io with GitHub Action.
 
 ## Invite the bot to your DC server
+> **Warning**
+> Don't use it in a community or a large server.  
+
 https://discord.com/api/oauth2/authorize?client_id=861144762358169626&permissions=51200&scope=bot
 
 ## How to use it
