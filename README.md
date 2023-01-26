@@ -1,6 +1,6 @@
 # EscapeBot
 
-A 24/7 Text-adventure game bot (non-profit) deployed on fly.io.
+A 24/7 Text-adventure game bot (non-profit) deployed on fly.io with GitHub Action.
 
 ## Version log
 - v0.1: Released level 1
