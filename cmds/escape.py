@@ -200,7 +200,7 @@ class Escape(Cog_Extension):
                         self.nextRoom(user)
                         plots = self.getRoomPlot(user)
                         for plot in plots:
-                            if plot == 'escape!':
+                            if plot == 'escaped!':
                                 await msg.channel.send(embed=self.getTxtEmbed('ESCAPE', user))
                                 return
                             else:
