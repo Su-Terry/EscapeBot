@@ -233,7 +233,7 @@ class Escape(Cog_Extension):
     async def L(self, msg) -> None:
         user = msg.author.name
         
-        if not os.path.isfile(f'User/users{user}.json'):
+        if not os.path.isfile(f'User/users/{user}.json'):
             await msg.channel.send('No game record.')
             return
         self.loadGame(user)
