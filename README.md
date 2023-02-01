@@ -6,7 +6,7 @@ A 24/7 Text-adventure game bot (non-profit) deployed on fly.io with GitHub Actio
 > **Warning**
 > Don't use it in a community or a large server.  
 
-https://discord.com/api/oauth2/authorize?client_id=861144762358169626&permissions=51200&scope=bot
+https://discord.com/api/oauth2/authorize?client_id=861144762358169626&permissions=59392&scope=bot
 
 ## How to use it
 `help`: Show the detailed command list.  
