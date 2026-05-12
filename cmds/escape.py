@@ -104,6 +104,7 @@ class Escape(Cog_Extension):
     @escape.command(brief='new game, "escape N"')
     async def N(self, ctx) -> None:
         user = ctx.author.name
+        is_first_time = not session_store.has_played_before(user)
 
         # Immediate visual feedback — edit this message in-place throughout generation.
         status_msg = await ctx.send("🎲 正在生成你的逃脫場景... (約需 30-60 秒)")
@@ -126,7 +127,14 @@ class Escape(Cog_Extension):
         self._active_sessions.add(user)
 
         opening = world_state.history[0]["narration"] if world_state.history else "You are in a room. Escape."
-        await status_msg.edit(content=None, embed=self._narration_embed(world_state, opening, user))
+        embed = self._narration_embed(world_state, opening, user)
+        if is_first_time:
+            embed.add_field(
+                name="💡 第一次玩?",
+                value="用自然語言告訴我你想做什麼。\n試試「看看四周」、「拿起鑰匙」、「移動到走廊」。",
+                inline=False,
+            )
+        await status_msg.edit(content=None, embed=embed)
 
     @escape.command(brief='resume game, "escape L"')
     async def L(self, ctx) -> None:
@@ -147,18 +155,27 @@ class Escape(Cog_Extension):
 
     @escape.command(brief='how to play, "escape H"')
     async def H(self, ctx) -> None:
-        embed = self._text_embed(
-            "How to Play",
-            (
-                "Type anything to interact with the world.\n\n"
-                "**Examples:** *look around*, *take the notebook*, *go to the corridor*, "
-                "*enter 4579*, *inspect the lock*\n\n"
-                "Type `q` or `quit` to pause your session (your progress is saved).\n"
-                "Type `escape L` to resume.\n"
-                "Type `escape N` to start a brand-new game.\n\n"
-                "⏳ 場景生成需要 30-60 秒，請耐心等待。"
-            ),
+        embed = discord.Embed(
+            title="📖 EscapeBot 指南",
+            description="你被困在一個神秘場景中，用自由文字解謎逃出。每場遊戲都不同。",
+            color=discord.Color.blurple(),
         )
+        embed.set_author(name=_AUTHOR_NAME, url=_AUTHOR_URL, icon_url=_AUTHOR_ICON)
+        embed.add_field(name="🎮 開始遊戲", value="`escape N` — 開新場景 (生成需 30-60 秒)", inline=False)
+        embed.add_field(name="💾 繼續遊戲", value="`escape L` — 載入上次進度", inline=False)
+        embed.add_field(name="❌ 暫停遊戲", value="`q` — 暫停 (進度保留，隨時 escape L 繼續)", inline=False)
+        embed.add_field(
+            name="💬 互動方式",
+            value="用自然語言，例如：\n• 探索：看看四周，仔細查看 X\n• 移動：移動到 X，前往 Y\n• 物品：拿起 X，使用 X\n• 解謎：輸入 1234，試試 LIGHT",
+            inline=False,
+        )
+        embed.add_field(name="🎒 物品欄", value="每次回應自動顯示你目前持有的物品", inline=False)
+        embed.add_field(
+            name="💡 卡住了?",
+            value="試著問：\n• 「我有什麼線索」\n• 「目標是什麼」\n• 「還有幾個謎題」",
+            inline=False,
+        )
+        embed.set_footer(text="EscapeBot · 每個場景都是 LLM 即時生成")
         await ctx.send(embed=embed)
 
     # ── Message listener (free-text game loop) ──────────────────────────────

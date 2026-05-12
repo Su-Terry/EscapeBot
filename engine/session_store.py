@@ -19,6 +19,11 @@ def _lock_for(username: str) -> asyncio.Lock:
     return _locks[username]
 
 
+def has_played_before(username: str) -> bool:
+    """Return True if a saved session file already exists for this user."""
+    return (_USER_DIR / f"{username}.json").exists()
+
+
 async def load(username: str) -> WorldState | None:
     async with _lock_for(username):
         path = _USER_DIR / f"{username}.json"

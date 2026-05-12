@@ -54,7 +54,7 @@ All field names must match exactly. All id values must be unique across the enti
     "<location_id>": {
       "id": "<string — kebab-case, globally unique>",
       "name": "<string — short display name>",
-      "description": "<string — 2-4 sentences of atmospheric flavour text>",
+      "description": "<string — 30-50 中文字, 列出場所特徵和可互動物件, 不要文藝鋪墊>",
       "item_ids": ["<item_id>", ...],
       "connected_location_ids": ["<location_id>", ...]
     }
@@ -63,7 +63,7 @@ All field names must match exactly. All id values must be unique across the enti
     "<item_id>": {
       "id": "<string — kebab-case, globally unique>",
       "name": "<string — short display name>",
-      "description": "<string — 1-2 sentences; embed clues here naturally>",
+      "description": "<string — 15-30 中文字, 列關鍵特徵, 自然嵌入線索>",
       "location_id": "<string — location_id where item starts, or 'inventory'>",
       "is_takeable": <bool>,
       "is_locked": <bool — true if another item is required to pick this up>,
@@ -75,7 +75,7 @@ All field names must match exactly. All id values must be unique across the enti
     "<puzzle_id>": {
       "id": "<string — kebab-case>",
       "location_id": "<string>",
-      "description": "<string — puzzle mechanism visible to player; do NOT include solution>",
+      "description": "<string — 15-30 中文字, 謎題機制, 不含答案>",
       "solution": "<string — exact answer player must type; ≤ 20 chars; derivable from clues>",
       "is_solved": false,
       "reward_item_id": "<string or null>"
@@ -92,7 +92,7 @@ All field names must match exactly. All id values must be unique across the enti
   "history": [
     {
       "action": "",
-      "narration": "<string — opening narration; 3-5 atmospheric sentences>"
+      "narration": "<string — 60-80 中文字, 介紹場景和玩家狀態, 口語不文藝>"
     }
   ]
 }
@@ -123,12 +123,22 @@ All field names must match exactly. All id values must be unique across the enti
 - Do not make the win target trivially reachable from start.
 
 ### Clue Design
-- Embed clues naturally in item descriptions and location descriptions.
-- Splitting clues across two items is encouraged (e.g., first two digits on one, last two on another).
+- Embed clues naturally in item/location descriptions.
+- Splitting clues across two items is encouraged (e.g. first two digits on one, last two on another).
 
-### Narrative Style
-- Write in second person in Traditional Chinese (「你看見…」、「你拿起…」).
-- Opening narration should immediately hook the player.
+### Description Style — STRICT
+字數上限 (超出視為違規):
+- Location.description: 30-50 中文字
+- Item.description: 15-30 中文字
+- Puzzle.description: 15-30 中文字
+- 開場 narration (history[0].narration): 60-80 中文字
+- Win condition description: 20-40 中文字
+
+寫法規則:
+- 口語, 不要文藝散文
+- 不描寫氣氛 (不要「空氣中瀰漫著…」「微弱光線…」「沉重的寂靜…」)
+- 直接列玩家看得到、用得到的資訊
+- 開場 narration 用第二人稱 (「你…」), 其他 description fields 用陳述句
 
 ## Dict Key Rule (CRITICAL — most common mistake)
 
