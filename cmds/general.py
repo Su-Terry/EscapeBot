@@ -39,14 +39,14 @@ class General(Cog_Extension):
         embed.add_field(name='Administrator', value='`clear {num}`: Clear {num} messages', inline=False)
         
         if os.path.isfile(path):
-            with open(path, 'r', encoding='utf8') as jfile:
-                jdata = json.load(jfile)
-            if jdata['inGame'] == 'TRUE':
-                cmds = ''
-                for cmd in jdata['cmds']:
-                    cmds += f'`{cmd}`  '
-                if cmds != '':
-                    embed.add_field(name='Cmds in Game', value=cmds, inline=False)
+            from engine import session_store
+            ws = await session_store.load(user)
+            if ws is not None and not ws.is_won:
+                embed.add_field(
+                    name="Game in Progress",
+                    value="Type anything to interact. `q` to pause. `escape H` for help.",
+                    inline=False,
+                )
         await ctx.send(embed=embed)
 
 
