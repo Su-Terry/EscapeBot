@@ -1,7 +1,14 @@
 # encoding: utf-8
+import json
+import logging
+
+import discord
 from core.classes import Cog_Extension
 from discord.ext import commands
-import os, json, discord
+
+from engine import session_store
+
+logger = logging.getLogger(__name__)
 
 
 class General(Cog_Extension):
@@ -28,25 +35,24 @@ class General(Cog_Extension):
     async def help(self, ctx):
         """Customize -- The help command for EscapeBot"""
         user = ctx.author.name
-        path = f'User/users/{user}.json'
         with open('setting.json', 'r', encoding='utf8') as jfile:
             jdata = json.load(jfile)
-        embed = discord.Embed(title='Help for EscapeBot',
-            description="Text Adventure: Version{}".format(jdata['version']))
-        
+        embed = discord.Embed(
+            title='Help for EscapeBot',
+            description="Text Adventure: Version{}".format(jdata['version']),
+        )
+
         embed.add_field(name='Escape', value='`escape`: start game', inline=False)
         embed.add_field(name='General', value='`invite_link`  `version_log`', inline=False)
         embed.add_field(name='Administrator', value='`clear {num}`: Clear {num} messages', inline=False)
-        
-        if os.path.isfile(path):
-            from engine import session_store
-            ws = await session_store.load(user)
-            if ws is not None and not ws.is_won:
-                embed.add_field(
-                    name="Game in Progress",
-                    value="Type anything to interact. `q` to pause. `escape H` for help.",
-                    inline=False,
-                )
+
+        ws = await session_store.load(user)
+        if ws is not None and not ws.is_won:
+            embed.add_field(
+                name="Game in Progress",
+                value="Type anything to interact. `q` to pause. `escape H` for help.",
+                inline=False,
+            )
         await ctx.send(embed=embed)
 
 

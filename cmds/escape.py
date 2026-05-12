@@ -1,3 +1,4 @@
+import asyncio
 import json
 import logging
 import os
@@ -15,6 +16,14 @@ _AUTHOR_NAME = "Made by: oceansfavor"
 _AUTHOR_URL = "https://www.instagram.com/oceansfavor/"
 _AUTHOR_ICON = "https://i.imgur.com/tax7zpT.jpg"
 _COLOR = 0xEDF10E
+_WIN_COLOR = 0x2ECC71
+
+_PROGRESS_PHASES = [
+    (15, "🎲 正在生成你的逃脫場景... 設計房間中"),
+    (15, "🎲 正在生成你的逃脫場景... 安排謎題中"),
+    (15, "🎲 正在生成你的逃脫場景... 即將完成"),
+    (15, "🎲 場景比較複雜，再等一下..."),
+]
 
 
 class Escape(Cog_Extension):
@@ -40,6 +49,19 @@ class Escape(Cog_Extension):
         embed.set_footer(text=f"{username} is playing! · Turn {world_state.turn_count}")
         return embed
 
+    def _win_embed(self, world_state, username: str) -> discord.Embed:
+        embed = discord.Embed(
+            title="🎉 你逃出去了！",
+            description=(
+                f"**{username}** 成功逃脫！\n\n"
+                f"共用了 **{world_state.turn_count}** 回合。\n\n"
+                "Type `escape N` to play again."
+            ),
+            color=_WIN_COLOR,
+        )
+        embed.set_author(name=_AUTHOR_NAME, url=_AUTHOR_URL, icon_url=_AUTHOR_ICON)
+        return embed
+
     def _text_embed(self, title: str, description: str) -> discord.Embed:
         embed = discord.Embed(title=title, description=description, color=_COLOR)
         embed.set_author(name=_AUTHOR_NAME, url=_AUTHOR_URL, icon_url=_AUTHOR_ICON)
@@ -60,6 +82,18 @@ class Escape(Cog_Extension):
         with open(path, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=4)
 
+    # ── Progress updater ────────────────────────────────────────────────────
+
+    @staticmethod
+    async def _run_progress_updates(msg: discord.Message) -> None:
+        """Edit msg through generation progress phases until cancelled."""
+        try:
+            for delay, text in _PROGRESS_PHASES:
+                await asyncio.sleep(delay)
+                await msg.edit(content=text)
+        except asyncio.CancelledError:
+            pass
+
     # ── Commands ────────────────────────────────────────────────────────────
 
     @commands.group(brief='call escape game')
@@ -70,20 +104,29 @@ class Escape(Cog_Extension):
     @escape.command(brief='new game, "escape N"')
     async def N(self, ctx) -> None:
         user = ctx.author.name
-        await ctx.send("Generating your escape room… this may take a moment.")
+
+        # Immediate visual feedback — edit this message in-place throughout generation.
+        status_msg = await ctx.send("🎲 正在生成你的逃脫場景... (約需 30-60 秒)")
+
+        gen_task = asyncio.create_task(engine.generate(user))
+        progress_task = asyncio.create_task(self._run_progress_updates(status_msg))
+
         try:
-            world_state = await engine.generate(user)
+            world_state = await gen_task
         except Exception:
             logger.exception("Scenario generation raised unexpectedly for user %s", user)
-            await ctx.send("Failed to create a scenario. Please try again.")
+            progress_task.cancel()
+            await status_msg.edit(content="場景生成失敗，請稍後重試 (`escape N`)")
             return
+
+        progress_task.cancel()
 
         await session_store.save(user, world_state)
         self._register_user(user)
         self._active_sessions.add(user)
 
         opening = world_state.history[0]["narration"] if world_state.history else "You are in a room. Escape."
-        await ctx.send(embed=self._narration_embed(world_state, opening, user))
+        await status_msg.edit(content=None, embed=self._narration_embed(world_state, opening, user))
 
     @escape.command(brief='resume game, "escape L"')
     async def L(self, ctx) -> None:
@@ -112,7 +155,8 @@ class Escape(Cog_Extension):
                 "*enter 4579*, *inspect the lock*\n\n"
                 "Type `q` or `quit` to pause your session (your progress is saved).\n"
                 "Type `escape L` to resume.\n"
-                "Type `escape N` to start a brand-new game."
+                "Type `escape N` to start a brand-new game.\n\n"
+                "⏳ 場景生成需要 30-60 秒，請耐心等待。"
             ),
         )
         await ctx.send(embed=embed)
@@ -140,7 +184,10 @@ class Escape(Cog_Extension):
         if txt.lower() in ("q", "quit"):
             self._active_sessions.discard(user)
             await msg.channel.send(
-                embed=self._text_embed("Paused", "Thanks for playing! Your progress is saved. Type `escape L` to resume.")
+                embed=self._text_embed(
+                    "Paused",
+                    "Thanks for playing! Your progress is saved. Type `escape L` to resume.",
+                )
             )
             return
 
@@ -149,12 +196,14 @@ class Escape(Cog_Extension):
             self._active_sessions.discard(user)
             return
 
-        try:
-            new_state = await engine.process_turn(world_state, txt)
-        except Exception:
-            logger.exception("process_turn raised for user %s action %r", user, txt)
-            await msg.channel.send("Something went wrong. Try again.")
-            return
+        # Typing indicator covers the 3-8s turn-handler latency.
+        async with msg.channel.typing():
+            try:
+                new_state = await engine.process_turn(world_state, txt)
+            except Exception:
+                logger.exception("process_turn raised for user %s action %r", user, txt)
+                await msg.channel.send("Something went wrong. Try again.")
+                return
 
         await session_store.save(user, new_state)
 
@@ -163,12 +212,7 @@ class Escape(Cog_Extension):
 
         if new_state.is_won:
             self._active_sessions.discard(user)
-            await msg.channel.send(
-                embed=self._text_embed(
-                    "🎉 Escaped!",
-                    f"{user} escaped successfully in {new_state.turn_count} turns!",
-                )
-            )
+            await msg.channel.send(embed=self._win_embed(new_state, user))
 
 
 async def setup(bot):
