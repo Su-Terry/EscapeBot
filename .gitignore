@@ -2,3 +2,10 @@
 .venv/
 __pycache__/
 *.pyc
+
+# Private notes (player data, screenshots, daily logs)
+notes/
+
+# Player session data (runtime, not source)
+User/users/
+*.bak

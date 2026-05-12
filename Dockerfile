@@ -1,28 +1,19 @@
 # syntax=docker/dockerfile:1
-
 # ── Builder: install deps with uv ─────────────────────────────────────────────
 FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim AS builder
-
 WORKDIR /app
-
-# Compile .pyc files and copy files instead of symlinking (required for COPY --from)
 ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy
-
-# Install dependencies only (cached layer — rebuilt only when lock file changes)
 COPY pyproject.toml uv.lock ./
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-dev --no-install-project
-
-# Copy source after deps so the dep layer is cached on code-only changes
+# DEBUG: 看 venv 到底在哪
+RUN ls -la /app && echo "---" && ls -la /app/.venv 2>/dev/null || echo "no .venv at /app/.venv" && echo "---" && find / -name "discord" -type d 2>/dev/null | head -5
 COPY . .
 
-# ── Runner: slim image with no build tooling ───────────────────────────────────
+# ── Runner ───────────────────────────────────
 FROM python:3.12-slim-bookworm
-
 WORKDIR /app
-
 COPY --from=builder /app /app
-
 ENV PATH="/app/.venv/bin:$PATH"
-
-CMD ["python", "bot.py"]
+RUN test -f /app/.venv/bin/python || (echo "ERROR: .venv missing" && ls -la /app && exit 1)
+CMD ["/app/.venv/bin/python", "bot.py"]

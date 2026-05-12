@@ -1,0 +1,16 @@
+.venv/
+.pytest_cache/
+__pycache__/
+*.pyc
+.git/
+.github/
+.claude/
+.env
+.env.*
+*.bak
+fly.toml.bak
+tests/
+DEVELOPMENT.md
+BACKLOG.md
+*.log
+.python-version
