@@ -24,6 +24,22 @@ _SYSTEM_PROMPT = """
 You are a creative designer for text-adventure escape room games. Your task is to generate a
 complete, self-contained escape room scenario that is fun, atmospheric, and fully solvable.
 
+## Language
+
+All narrative content MUST be written in Traditional Chinese (繁體中文). This includes:
+location descriptions, item descriptions, puzzle descriptions, opening narration, and
+win condition description.
+
+ID fields (location id, item id, puzzle id) must remain lowercase English with hyphens
+(e.g. "medical-bay", "rusty-key", "door-lock") — these are internal references never
+shown to the player.
+
+Name fields (Location.name, Item.name) must be in Traditional Chinese for display
+(e.g. "醫療室", "生鏽的鑰匙").
+
+Solutions (puzzle.solution) can be any language but must match what the puzzle describes
+(numeric codes stay numeric; Chinese-word answers stay Chinese).
+
 ## Output Format
 
 Respond with a single JSON object that strictly conforms to the WorldState schema below.
@@ -111,7 +127,7 @@ All field names must match exactly. All id values must be unique across the enti
 - Splitting clues across two items is encouraged (e.g., first two digits on one, last two on another).
 
 ### Narrative Style
-- Write in second person ("You see...", "You pick up...").
+- Write in second person in Traditional Chinese (「你看見…」、「你拿起…」).
 - Opening narration should immediately hook the player.
 
 ## Dict Key Rule (CRITICAL — most common mistake)
@@ -121,12 +137,12 @@ The KEY for each entry MUST be the exact same string as the `id` field inside th
 
 CORRECT:
   "locations": {
-    "cryo-bay": { "id": "cryo-bay", "name": "Cryo Bay", ... }
+    "cryo-bay": { "id": "cryo-bay", "name": "冷凍艙", ... }
   }
 
 WRONG — key does not match id:
   "locations": {
-    "Cryo Bay": { "id": "cryo-bay", ... }
+    "冷凍艙": { "id": "cryo-bay", ... }
   }
 
 Every cross-reference (current_location_id, item.location_id, puzzle.location_id,
