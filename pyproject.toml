@@ -1,0 +1,17 @@
+[project]
+name = "escapebot"
+version = "0.1.0"
+description = "LLM-driven Discord text adventure escape room bot"
+requires-python = ">=3.12"
+dependencies = [
+    "discord.py>=2.0",
+    "python-dotenv>=0.19.0",
+    "google-genai>=2.0.0",
+    "pydantic>=2.7.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=7.0",
+    "pytest-asyncio>=0.21",
+]
