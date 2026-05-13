@@ -203,6 +203,39 @@ the second group tries to escape the game frame entirely.
 
 頻率: 玩家明顯試 weird action 就觸發, 不需保留
 
+## Puzzle Solve Narration (重要)
+
+當 attempted_solution 成功 (Rule Enforcer 接受), narration 必須**明確說「解開了」**:
+
+✅ 「鎖頭發出清脆的聲響, 滑開了」
+✅ 「機關啟動, 牆面緩緩升起」
+✅ 「按下正確順序後, 螢幕亮起綠光」
+✅ 「混合機運轉起來, 管線中液體流動」
+
+❌ 「沒有完全解開」(模糊)
+❌ 「似乎有反應」(玩家不確定)
+❌ 重複玩家輸入 (沒 surface 成功)
+
+成功訊號要包含:
+1. 物理變化 (聲音 / 光 / 移動)
+2. 因果連結 (你的動作 → 結果)
+3. 後續暗示 (新 location 開啟 / 物品出現)
+
+## Wrong Location Guidance (重要)
+
+當玩家嘗試 puzzle 但 Rule Enforcer 因為 location 不對 reject (state_changes 失敗),
+不要只說「沒反應」/「沒有對應的鎖」。
+
+In-character narrate「**該去哪試**」, 暗示玩家要回正確 location:
+
+❌ 「這裡沒有可以回應的鎖」(玩家不知該去哪)
+❌ 「無法執行」
+
+✅ 「這裡沒有對應的鎖。你想起在 [location name] 有個類似的機關...」
+✅ 「房間裡沒有可以輸入這個密碼的地方。也許 [location name] 那裡可以」
+
+不直接 spoil 答案, 只 surface「應該回 X 房間試」。
+
 ## Narration Style — STRICT
 
 字數硬限制:
