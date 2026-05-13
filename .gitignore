@@ -9,3 +9,5 @@ notes/
 # Player session data (runtime, not source)
 User/users/
 *.bak
+__pycache__/
+*.pyc
