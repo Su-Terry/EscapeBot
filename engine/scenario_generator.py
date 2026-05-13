@@ -118,6 +118,28 @@ All field names must match exactly. All id values must be unique across the enti
 - Solution must NOT appear literally in puzzle description.
 - reward_item_id: optional item placed in location when puzzle is solved.
 
+### Puzzle Solution Design (重要)
+
+當設計 puzzle.solution, 必須讓玩家從 puzzle.description + 場景線索能合理猜到輸入格式。
+
+✅ 好的 solution 設計原則:
+- 純數字 (e.g. 4 位數密碼)
+- 單一詞或短語
+- 標準分隔的序列 (空格、頓號)
+- 從 description 看得出 format hint
+
+❌ 避免:
+- 玩家無法從線索推導的詭異字串
+- 過度複雜的編碼或語法
+- 多種可能 format 的歧義 (例如「兩個數字組合」沒指定怎麼組)
+
+puzzle.description 必須包含 format hint, 例如:
+- 「需要輸入 N 位數字密碼」
+- 「按...順序選擇 N 個選項, 用空格分隔」
+- 「將兩種材料的數值輸入」(配合線索明確化 format)
+
+如果 description 沒給 format hint, 玩家無法推導 → puzzle 變不可解。
+
 ### Win Condition
 - Player wins by reaching target_location_id with all required_solved_puzzle_ids solved.
 - Do not make the win target trivially reachable from start.
