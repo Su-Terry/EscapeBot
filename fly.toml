@@ -7,6 +7,10 @@ kill_timeout = 5
 [build]
   dockerfile = "Dockerfile"
 
+[mounts]
+  source = "escape_data"
+  destination = "/app/User"
+
 [[vm]]
   size = "shared-cpu-1x"
   memory = "256mb"

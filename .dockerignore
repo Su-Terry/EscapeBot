@@ -14,3 +14,5 @@ DEVELOPMENT.md
 BACKLOG.md
 *.log
 .python-version
+User/users/
+User/userlist.json
